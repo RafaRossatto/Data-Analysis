@@ -1,21 +1,47 @@
-def msd2DWithPeriodicBondaryConditions(timeStep,xData,yData,boxLength):
+import numpy as np
+
+def msd2DWithPeriodicBondaryConditions(timeStep, xData, yData, boxLength):
+    """
+    Calculate the mean squared displacement (MSD) for 2D data with periodic boundary conditions.
+
+    Parameters
+    ----------
+    timeStep : array_like
+        Array of time steps.
+    xData : array_like
+        Array of x coordinates.
+    yData : array_like
+        Array of y coordinates.
+    boxLength : float
+        Length of the periodic box.
+
+    Returns
+    -------
+    msd : list
+        Mean squared displacement for each time step.
+    """
+    
+    # Initialize the array to hold the displacements
     dr = np.zeros(len(timeStep))
 
-    # Calcular o deslocamento quadrático médio
+    # Calculate the mean squared displacement
     for i in range(1, len(timeStep)):
-        
-        x0, y0 = x[i-1], y[i-1]
+        # Initial positions
+        x0, y0 = xData[i-1], yData[i-1]
+
+        # Update x and y coordinates with periodic boundary conditions
+        xData[i] = (xData[i] - x0)
+        xData[i] = xData[i] - np.round(xData[i] / boxLength) * boxLength
+        xData[i] = xData[i] + x0
+
+        yData[i] = (yData[i] - y0)
+        yData[i] = yData[i] - np.round(yData[i] / boxLength) * boxLength
+        yData[i] = yData[i] + y0
+
+        # Calculate the squared displacement
+        dr[i] = (xData[i] - x0)**2 + (yData[i] - y0)**2
+
+    # Cumulative sum to get MSD
+    msd = [sum(dr[:i+1]) for i in range(len(dr))]
     
-        x[i] = (x[i] - x0)
-        x[i] = x[i] - np.round(x[i] / boxLength) * boxLength
-        x[i] = x[i] + x0
-
-        y[i] = (y[i] - y0)
-        y[i] = y[i] - np.round(y[i] / boxLength) * boxLength
-        y[i] = y[i] + y0
-
-        dr[i] = (x[i] - x0)**2 + (y[i] - y0)**2
-    array= dr
-    msd = [sum(array[:i+1]) for i in range(len(array))]
-        
-    return msd  
+    return msd
