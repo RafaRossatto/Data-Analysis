@@ -17,8 +17,11 @@ def msd2DWithPeriodicBondaryConditions(timeStep, xData, yData, boxLength):
 
     Returns
     -------
+    timeStep: list
+        Time step used for the calculation
     msd : list
         Mean squared displacement for each time step.
+
     """
     
     # Initialize the array to hold the displacements
@@ -44,4 +47,4 @@ def msd2DWithPeriodicBondaryConditions(timeStep, xData, yData, boxLength):
     # Cumulative sum to get MSD
     msd = [sum(dr[:i+1]) for i in range(len(dr))]
     
-    return msd
+    return timeStep,msd
